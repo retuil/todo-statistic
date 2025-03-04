@@ -61,11 +61,14 @@ function processCommand(command) {
     }
 }
 
-function show(todos) {
+function show(data) {
+    const todos = data.map(extractAuthorAndDate).map(evaluateImportant);
+
     const importantLength = 1;
-    const userLength = 10;
-    const dateLength = 10;
-    const textLength = 50;
+    const userLength = detectLength(todos.map(x => (x.author || '').length), 10);
+    const dateLength = detectLength(todos.map(x => (x.date || '').length), 10);
+    const textLength = detectLength(todos.map(x => (x.clearValue || x.value || '').length ||
+        x.value.length), 50);
 
     for (let todo of todos) {
         const important = setLength(todo.important ? '!' : '', importantLength);
@@ -120,6 +123,10 @@ function setLength(obj, maxLength) {
 
 function writeLine(...lines) {
     return lines.join(' | ')
+}
+
+function detectLength(data, maxLength){
+    return Math.min(10, Math.max(data));
 }
 
 // console.log(extractAuthorAndDate({value: ""}))
