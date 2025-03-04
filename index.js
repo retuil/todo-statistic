@@ -10,15 +10,17 @@ function getFiles() {
     const filePaths = getAllFilePathsWithExtension(process.cwd(), 'js');
     return filePaths.map(path => readFile(path));
 }
-function getTODOs() { // => Array[str]
+function getTODOs() { 
     const filesContent = getFiles();
+    const regex = /^\s*\/\/\s*[Tt][Oo][Dd][Oo][\s\S]+/;
     const todoComments = [];
 
     for (const content of filesContent) {
         const lines = content.split('\n');
         for (const line of lines) {
-            if (line.includes('// TODO')) {
-                todoComments.push({'value': line.trim()});
+            const match = line.match(regex);
+            if (match) {
+                todoComments.push({'value': match[0].trim()});
             }
         }
     }
