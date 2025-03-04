@@ -1,6 +1,6 @@
 const {getAllFilePathsWithExtension, readFile} = require('./fileSystem');
 const {readLine} = require('./console');
-
+const path = require('node:path');
 const files = getFiles();
 
 console.log('Please, write your command!');
@@ -8,19 +8,22 @@ readLine(processCommand);
 
 function getFiles() {
     const filePaths = getAllFilePathsWithExtension(process.cwd(), 'js');
-    return filePaths.map(path => readFile(path));
+    return filePaths.map(path => [readFile(path), path]);
 }
+
 function getTODOs() { 
-    const filesContent = getFiles();
-    const regex = /^\s*\/\/\s*[Tt][Oo][Dd][Oo][\s\S]+/;
+    const regex = /^\s*\/\/\s*[Tt][Oo][Dd][Oo]\s*(.*)/;
     const todoComments = [];
 
-    for (const content of filesContent) {
-        const lines = content.split('\n');
+    for (const content of files) {
+        const lines = content[0].split('\n');
         for (const line of lines) {
             const match = line.match(regex);
             if (match) {
-                todoComments.push({'value': match[0].trim()});
+                todoComments.push({
+                    'value': match[1],
+                    'file': path.basename(content[1])
+                });
             }
         }
     }
