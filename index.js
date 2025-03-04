@@ -19,11 +19,31 @@ function processCommand(command) {
         case 'exit':
             process.exit(0);
             break;
-
+        case 'show':
+            show(getTODOs());
+            break
+        case 'important':
+            let importantTodos = getTODOs()
+                .map(evaluateImportant)
+                .filter(todo => todo.important > 0);
+            show(importantTodos);
+            break;
         default:
             console.log('wrong command');
             break;
     }
+}
+
+function show(todos){
+    for (let todo of todos) {
+        console.log(todo.value);
+    }
+}
+
+function evaluateImportant(todo){
+    let str = todo.value;
+    todo['important'] = str.split('!').length - 1;
+    return todo;
 }
 
 // TODO you can do it!
