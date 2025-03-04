@@ -48,7 +48,7 @@ function processCommand(command) {
             const userName = commandParts[1];
             const userTodos = getTODOs()
                 .map(extractAuthorAndDate)
-                .filter(obj => obj.author === userName);
+                .filter(obj => (obj.author || '').toLowerCase() === (userName || '').toLowerCase());
             show(userTodos)
             break;
         case 'important':
@@ -57,6 +57,26 @@ function processCommand(command) {
                 .filter(todo => todo.important > 0);
             show(importantTodos);
             break;
+        case 'sort':
+            const toSortTodos = getTODOs()
+                .map(extractAuthorAndDate)
+                .map(evaluateImportant)
+            switch (commandParts[1]) {
+                case 'importance':
+                    toSortTodos.sort((a, b) => -a.important + b.important)
+                    break;
+                case 'user':
+                    toSortTodos.sort((a, b) => ((a.author || '').length - (b.author || '').length) || (a.author - b.author))
+                    break
+                case 'date':
+                    toSortTodos.sort((a, b) => Date.parse(a.date) - Date.parse(b.date))
+                    break
+                default:
+                    console.log('unknown species')
+                    return;
+            }
+            show(toSortTodos);
+            break
         default:
             console.log('wrong command');
             break;
@@ -65,6 +85,7 @@ function processCommand(command) {
 
 function show(data, ndate=NaN) {
     const todos = data.map(extractAuthorAndDate).map(evaluateImportant);
+    todos.unshift({'author': 'user', 'important': 1, 'date': 'date', 'value': 'comment'})
 
     const importantLength = 1;
     const userLength = detectLength(todos.map(x => (x.author || '').length), 10);
@@ -72,6 +93,8 @@ function show(data, ndate=NaN) {
     const textLength = detectLength(todos.map(x => (x.clearValue || x.value || '').length ||
         x.value.length), 50);
 
+    writeDataLine(todos.shift(), importantLength, userLength, dateLength, textLength);
+    console.log('-'.repeat(importantLength + userLength + dateLength + textLength + 3 * 3));
     for (let todo of todos) {
         const important = setLength(todo.important ? '!' : '', importantLength);
         const user = setLength(todo.author || '', userLength);
@@ -83,6 +106,7 @@ function show(data, ndate=NaN) {
             console.log(writeLine(important, user, date, text));
         }
     }
+    console.log('-'.repeat(importantLength + userLength + dateLength + textLength + 3 * 3));
 }
 
 function evaluateImportant(todo) {
@@ -123,14 +147,23 @@ function setLength(obj, maxLength) {
         return str.substring(0, maxLength - 3) + '...';
     }
 
-    return str.padEnd(maxLength - str.length, ' ');
+    return str.padEnd(maxLength, ' ');
+}
+
+function writeDataLine(data, importantLength, userLength, dateLength, textLength){
+    const important = setLength(data.important ? '!' : '', importantLength);
+    const user = setLength(data.author || '', userLength);
+    const date = setLength(data.date || '', dateLength);
+    const text = setLength(data.clearValue || data.value || '', textLength);
+
+    console.log(writeLine(important, user, date, text));
 }
 
 function writeLine(...lines) {
     return lines.join(' | ')
 }
 
-function detectLength(dataLengths, maxLength){
+function detectLength(dataLengths, maxLength) {
     return Math.min(maxLength, Math.max(...dataLengths));
 }
 
