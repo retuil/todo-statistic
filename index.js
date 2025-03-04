@@ -62,6 +62,7 @@ function processCommand(command) {
 
 function show(data) {
     const todos = data.map(extractAuthorAndDate).map(evaluateImportant);
+    todos.unshift({'author': 'user', 'important': 1, 'date': 'date', 'value': 'comment'})
 
     const importantLength = 1;
     const userLength = detectLength(todos.map(x => (x.author || '').length), 10);
@@ -69,14 +70,12 @@ function show(data) {
     const textLength = detectLength(todos.map(x => (x.clearValue || x.value || '').length ||
         x.value.length), 50);
 
+    writeDataLine(todos.shift(), importantLength, userLength, dateLength, textLength);
+    console.log('-'.repeat(importantLength + userLength + dateLength + textLength + 3 * 3));
     for (let todo of todos) {
-        const important = setLength(todo.important ? '!' : '', importantLength);
-        const user = setLength(todo.author || '', userLength);
-        const date = setLength(todo.date || '', dateLength);
-        const text = setLength(todo.clearValue || todo.value || '', textLength);
-
-        console.log(writeLine(important, user, date, text));
+        writeDataLine(todo, importantLength, userLength, dateLength, textLength);
     }
+    console.log('-'.repeat(importantLength + userLength + dateLength + textLength + 3 * 3));
 }
 
 function evaluateImportant(todo) {
@@ -118,6 +117,15 @@ function setLength(obj, maxLength) {
     }
 
     return str.padEnd(maxLength - str.length, ' ');
+}
+
+function writeDataLine(data, importantLength, userLength, dateLength, textLength){
+    const important = setLength(data.important ? '!' : '', importantLength);
+    const user = setLength(data.author || '', userLength);
+    const date = setLength(data.date || '', dateLength);
+    const text = setLength(data.clearValue || data.value || '', textLength);
+
+    console.log(writeLine(important, user, date, text));
 }
 
 function writeLine(...lines) {
