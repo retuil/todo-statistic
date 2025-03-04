@@ -6,7 +6,6 @@ const files = getFiles();
 console.log('Please, write your command!');
 readLine(processCommand);
 readLine(processCommand);
-readLine(processCommand);
 
 function getFiles() {
     const filePaths = getAllFilePathsWithExtension(process.cwd(), 'js');
