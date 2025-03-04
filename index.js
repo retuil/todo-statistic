@@ -137,7 +137,7 @@ function setLength(obj, maxLength) {
         return str.substring(0, maxLength - 3) + '...';
     }
 
-    return str.padEnd(maxLength - str.length, ' ');
+    return str.padEnd(maxLength, ' ');
 }
 
 function writeLine(...lines) {
