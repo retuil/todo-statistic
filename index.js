@@ -11,7 +11,7 @@ function getFiles() {
     return filePaths.map(path => readFile(path));
 }
 
-function getTODOs()  // => Array[str]
+function getTODOs()  // => Array[{value: str}]
 {}
 
 function processCommand(command) {
@@ -19,6 +19,7 @@ function processCommand(command) {
         case 'exit':
             process.exit(0);
             break;
+
         default:
             console.log('wrong command');
             break;
