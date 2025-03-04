@@ -60,7 +60,7 @@ function show(todos){
         const important = setLength(todo.important ? '!' : '', importantLength);
         const user = setLength(todo.author || '', userLength);
         const date = setLength(todo.date || '', dateLength);
-        const text = setLength(todo.value || '', textLength);
+        const text = setLength(todo.clearValue || todo.value || '', textLength);
 
         console.log(writeLine(important, user, date, text));
     }
@@ -101,7 +101,8 @@ function setLength(str, maxLength){
     if (str.length > maxLength){
         return str.substring(0, maxLength - 3) + '...';
     }
-    return str;
+
+    return str.padEnd(maxLength - str.length, ' ');
 }
 
 function writeLine(...lines){
