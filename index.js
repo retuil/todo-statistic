@@ -45,7 +45,7 @@ function processCommand(command) {
             const userName = commandParts[1];
             const userTodos = getTODOs()
                 .map(extractAuthorAndDate)
-                .filter(obj => obj.author === userName);
+                .filter(obj => (obj.author || '').toLowerCase() === (userName || '').toLowerCase());
             show(userTodos)
             break;
         case 'important':
