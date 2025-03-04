@@ -5,13 +5,15 @@ const files = getFiles();
 
 console.log('Please, write your command!');
 readLine(processCommand);
+readLine(processCommand);
+readLine(processCommand);
 
 function getFiles() {
     const filePaths = getAllFilePathsWithExtension(process.cwd(), 'js');
     return filePaths.map(path => [readFile(path), path]);
 }
 
-function getTODOs() { 
+function getTODOs() {
     const regex = /^\s*\/\/\s*[Tt][Oo][Dd][Oo]\s*(.*)/;
     const todoComments = [];
 
@@ -31,13 +33,22 @@ function getTODOs() {
 }
 
 function processCommand(command) {
-    switch (command) {
+    const commandParts = command.split(' ');
+    const commandName = commandParts[0];
+    switch (commandName) {
         case 'exit':
             process.exit(0);
             break;
         case 'show':
             show(getTODOs());
             break
+        case 'user':
+            const userName = commandParts[1];
+            const userTodos = getTODOs()
+                .map(extractAuthorAndDate)
+                .filter(obj => obj.author === userName);
+            show(userTodos)
+            break;
         case 'important':
             let importantTodos = getTODOs()
                 .map(evaluateImportant)
@@ -50,7 +61,7 @@ function processCommand(command) {
     }
 }
 
-function show(todos){
+function show(todos) {
     const importantLength = 1;
     const userLength = 10;
     const dateLength = 10;
@@ -66,7 +77,7 @@ function show(todos){
     }
 }
 
-function evaluateImportant(todo){
+function evaluateImportant(todo) {
     let str = todo.value;
     todo['important'] = str.split('!').length - 1;
     return todo;
@@ -78,8 +89,9 @@ function evaluateImportant(todo){
 function extractAuthorAndDate(obj) {
     const t = obj.value.split(';');
     if (t.length >= 3) {
+
         const author = t[0].trim();
-        const date = Date.parse(t[1].trim());
+        const date = t[1].trim();
         const endDateIndex = obj.value.indexOf(';', obj.value.indexOf(';') + 1) + 1;
         const clearValue = obj.value.slice(endDateIndex).trim();
         return {
@@ -97,15 +109,16 @@ function extractAuthorAndDate(obj) {
     };
 }
 
-function setLength(str, maxLength){
-    if (str.length > maxLength){
+function setLength(obj, maxLength) {
+    let str = obj.toString();
+    if (str.length > maxLength) {
         return str.substring(0, maxLength - 3) + '...';
     }
 
     return str.padEnd(maxLength - str.length, ' ');
 }
 
-function writeLine(...lines){
+function writeLine(...lines) {
     return lines.join(' | ')
 }
 
