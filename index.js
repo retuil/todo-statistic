@@ -54,6 +54,26 @@ function processCommand(command) {
                 .filter(todo => todo.important > 0);
             show(importantTodos);
             break;
+        case 'sort':
+            const toSortTodos = getTODOs()
+                .map(extractAuthorAndDate)
+                .map(evaluateImportant)
+            switch (commandParts[1]) {
+                case 'importance':
+                    toSortTodos.sort((a, b) => -a.important + b.important)
+                    break;
+                case 'user':
+                    toSortTodos.sort((a, b) => ((a.author || '').length - (b.author || '').length) || (a.author - b.author))
+                    break
+                case 'date':
+                    toSortTodos.sort((a, b) => Date.parse(a.date) - Date.parse(b.date))
+                    break
+                default:
+                    console.log('unknown species')
+                    return;
+            }
+            show(toSortTodos);
+            break
         default:
             console.log('wrong command');
             break;
@@ -116,7 +136,7 @@ function setLength(obj, maxLength) {
         return str.substring(0, maxLength - 3) + '...';
     }
 
-    return str.padEnd(maxLength - str.length, ' ');
+    return str.padEnd(maxLength, ' ');
 }
 
 function writeDataLine(data, importantLength, userLength, dateLength, textLength){
@@ -132,7 +152,7 @@ function writeLine(...lines) {
     return lines.join(' | ')
 }
 
-function detectLength(dataLengths, maxLength){
+function detectLength(dataLengths, maxLength) {
     return Math.min(maxLength, Math.max(...dataLengths));
 }
 
