@@ -41,6 +41,9 @@ function processCommand(command) {
         case 'show':
             show(getTODOs());
             break
+        case 'date':
+            const date = commandParts[1];
+            show(getTODOs(), date)
         case 'user':
             const userName = commandParts[1];
             const userTodos = getTODOs()
@@ -60,7 +63,7 @@ function processCommand(command) {
     }
 }
 
-function show(data) {
+function show(data, ndate=NaN) {
     const todos = data.map(extractAuthorAndDate).map(evaluateImportant);
 
     const importantLength = 1;
@@ -74,8 +77,11 @@ function show(data) {
         const user = setLength(todo.author || '', userLength);
         const date = setLength(todo.date || '', dateLength);
         const text = setLength(todo.clearValue || todo.value || '', textLength);
-
-        console.log(writeLine(important, user, date, text));
+        if (isNaN(ndate)) {
+            console.log(writeLine(important, user, date, text));
+        } else if (date.includes(String(ndate))) {
+            console.log(writeLine(important, user, date, text));
+        }
     }
 }
 
