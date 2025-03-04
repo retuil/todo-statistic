@@ -10,7 +10,7 @@ function getFiles() {
     const filePaths = getAllFilePathsWithExtension(process.cwd(), 'js');
     return filePaths.map(path => readFile(path));
 }
-function getTODOs() { // => Array[str]
+function getTODOs() { // => Array[{value: str}]
     const filesContent = getFiles();
     const todoComments = [];
 
@@ -40,3 +40,32 @@ function processCommand(command) {
 }
 
 // TODO you can do it!
+
+
+function extractAuthorAndDate(obj) {
+    const t = obj.value.split(';');
+    if (t.length >= 3) {
+        const author = t[0].trim();
+        const date = Date.parse(t[1].trim());
+        const endDateIndex = obj.value.indexOf(';', obj.value.indexOf(';') + 1) + 1;
+        const clearValue = obj.value.slice(endDateIndex).trim();
+        return {
+            ...obj,
+            author,
+            date,
+            clearValue,
+        };
+    }
+    return {
+        ...obj,
+        author: null,
+        date: null,
+        clearValue: obj.value.trim(),
+    };
+}
+
+// console.log(extractAuthorAndDate({value: ""}))
+// console.log(extractAuthorAndDate({value: ";"}))
+// console.log(extractAuthorAndDate({value: "abc; 2020-11-1; comm"}))
+// console.log(extractAuthorAndDate({value: "abc;2020-11-1;comm"}))
+
