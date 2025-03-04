@@ -125,8 +125,8 @@ function writeLine(...lines) {
     return lines.join(' | ')
 }
 
-function detectLength(data, maxLength){
-    return Math.min(10, Math.max(data));
+function detectLength(dataLengths, maxLength){
+    return Math.min(maxLength, Math.max(...dataLengths));
 }
 
 // console.log(extractAuthorAndDate({value: ""}))
