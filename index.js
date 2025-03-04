@@ -12,16 +12,16 @@ function getFiles() {
 }
 
 function getTODOs() { 
-    const regex = /^\s*\/\/\s*[Tt][Oo][Dd][Oo][\s\S]+/;
+    const regex = /^\s*\/\/\s*[Tt][Oo][Dd][Oo]\s*(.*)/;
     const todoComments = [];
-    
+
     for (const content of files) {
         const lines = content[0].split('\n');
         for (const line of lines) {
             const match = line.match(regex);
             if (match) {
                 todoComments.push({
-                    'value': match[0].trim(),
+                    'value': match[1],
                     'file': path.basename(content[1])
                 });
             }
