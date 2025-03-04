@@ -11,6 +11,9 @@ function getFiles() {
     return filePaths.map(path => readFile(path));
 }
 
+function getTODOs()  // => Array[str]
+{}
+
 function processCommand(command) {
     switch (command) {
         case 'exit':
