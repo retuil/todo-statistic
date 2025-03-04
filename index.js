@@ -48,8 +48,18 @@ function processCommand(command) {
 }
 
 function show(todos){
+    const importantLength = 1;
+    const userLength = 10;
+    const dateLength = 10;
+    const textLength = 50;
+
     for (let todo of todos) {
-        console.log(todo.value);
+        const important = setLength(todo.important ? '!' : '', importantLength);
+        const user = setLength(todo.author || '', userLength);
+        const date = setLength(todo.date || '', dateLength);
+        const text = setLength(todo.value || '', textLength);
+
+        console.log(writeLine(important, user, date, text));
     }
 }
 
@@ -82,6 +92,17 @@ function extractAuthorAndDate(obj) {
         date: null,
         clearValue: obj.value.trim(),
     };
+}
+
+function setLength(str, maxLength){
+    if (str.length > maxLength){
+        return str.substring(0, maxLength - 3) + '...';
+    }
+    return str;
+}
+
+function writeLine(...lines){
+    return lines.join(' | ')
 }
 
 // console.log(extractAuthorAndDate({value: ""}))
