@@ -10,9 +10,20 @@ function getFiles() {
     const filePaths = getAllFilePathsWithExtension(process.cwd(), 'js');
     return filePaths.map(path => readFile(path));
 }
+function getTODOs() { // => Array[str]
+    const filesContent = getFiles();
+    const todoComments = [];
 
-function getTODOs()  // => Array[{value: str}]
-{}
+    for (const content of filesContent) {
+        const lines = content.split('\n');
+        for (const line of lines) {
+            if (line.includes('// TODO')) {
+                todoComments.push({'value': line.trim()});
+            }
+        }
+    }
+    return todoComments;
+}
 
 function processCommand(command) {
     switch (command) {
